@@ -12,5 +12,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="CommonDataset" />
+    <orderEntry type="library" name="heartdroid-1.2.0" level="project" />
   </component>
 </module>

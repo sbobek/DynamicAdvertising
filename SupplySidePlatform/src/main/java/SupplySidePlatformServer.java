@@ -7,6 +7,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.net.Socket;
+import java.util.Date;
 
 /**
  * Created by Vulpes on 2016-12-04.
@@ -17,6 +18,7 @@ public class SupplySidePlatformServer {
         output.setFloorPrice((float) (Math.random()*10.0));
         output.setCity("alaska");
         output.setConversationId("aaaaabbbbbbcccc");
+        output.setDateTime(new Date());
         return output;
     }
 

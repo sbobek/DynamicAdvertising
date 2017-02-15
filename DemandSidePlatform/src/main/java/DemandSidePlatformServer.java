@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class DemandSidePlatformServer {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcom to DSP! Type: DSP_ID PORT_NUMBER");
+        System.out.println("Welcome to DSP! Type: DSP_ID PORT_NUMBER");
         String command = scanner.nextLine();
 
         String dsId = command.split(" ")[0];
