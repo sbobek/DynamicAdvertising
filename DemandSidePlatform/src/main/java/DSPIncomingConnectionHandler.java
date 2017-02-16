@@ -55,6 +55,8 @@ public class DSPIncomingConnectionHandler implements Runnable {
 
             if (bidVictoryAdExchangeRS.getPaidPrice() != 0.0) {
                 System.out.println("I win!");
+                HeartService.incrementSoldAds();
+                HeartService.addPaidMoney(Double.valueOf(bidVictoryAdExchangeRS.getPaidPrice()));
             }
             socket.close();
 

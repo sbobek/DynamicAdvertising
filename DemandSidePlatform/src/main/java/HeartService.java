@@ -22,6 +22,35 @@ import java.util.LinkedList;
 public class HeartService {
     XTTModel model = null;
 
+    private static Integer soldAds = 0;
+    private static Double paidMoney = 0.0;
+    private static String modelfile = "src/main/resources/XTT2Model.hmr";
+
+    public static String getModelfile() {
+        return modelfile;
+    }
+
+    public static void setModelfile(String modelfile) {
+        if(modelfile.equals("NONE")) return;
+        HeartService.modelfile = modelfile;
+    }
+
+    public static synchronized Integer getSoldAds() {
+        return soldAds;
+    }
+
+    public static synchronized void incrementSoldAds() {
+        HeartService.soldAds = HeartService.soldAds + 1;
+    }
+
+    public static synchronized Double getPaidMoney() {
+        return paidMoney;
+    }
+
+    public static synchronized void addPaidMoney(Double paidMoney) {
+        HeartService.paidMoney += paidMoney;
+    }
+
     HeartService() {
         getModel();
     }
@@ -29,7 +58,7 @@ public class HeartService {
     public boolean getModel() {
         try {
             //Loading a file with a model
-            SourceFile hmr_threat_monitor = new SourceFile("src/main/resources/XTT2Model.hmr");
+            SourceFile hmr_threat_monitor = new SourceFile(modelfile);
             HMRParser parser = new HMRParser();
 
             //Parsing the file with the model
@@ -236,6 +265,16 @@ public class HeartService {
         adHeightE.setAttributeName("adheight_attr");
         adHeightE.setValue(new SimpleNumeric(Double.valueOf(height)));
         XTTstate.addStateElement(adHeightE);
+
+        StateElement aoldAdsE = new StateElement();
+        aoldAdsE.setAttributeName("soldads_attr");
+        aoldAdsE.setValue(new SimpleNumeric(Double.valueOf(getSoldAds())));
+        XTTstate.addStateElement(aoldAdsE);
+
+        StateElement paidMoneyE = new StateElement();
+        paidMoneyE.setAttributeName("paidomoney_attr");
+        paidMoneyE.setValue(new SimpleNumeric(getPaidMoney()));
+        XTTstate.addStateElement(paidMoneyE);
 
         return XTTstate;
     }

@@ -9,11 +9,15 @@ import java.util.Scanner;
 public class DemandSidePlatformServer {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to DSP! Type: DSP_ID PORT_NUMBER");
+        System.out.println("Welcome to DSP! Type: DSP_MODEL_PATH DSP_ID PORT_NUMBER\n " +
+                "using 'NONE' as DSP_MODEL_PATH defaults to standard example model");
         String command = scanner.nextLine();
 
-        String dsId = command.split(" ")[0];
-        Integer portNo = Integer.parseInt(command.split(" ")[1]);
+        String model = command.split(" ")[0];
+        String dsId = command.split(" ")[1];
+        Integer portNo = Integer.parseInt(command.split(" ")[2]);
+
+        HeartService.setModelfile(model);
 
         ServerSocket serverSocket = null;
         try {
