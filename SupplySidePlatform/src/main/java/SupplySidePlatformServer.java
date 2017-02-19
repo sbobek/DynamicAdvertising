@@ -1,58 +1,141 @@
-import RequestsAndResponses.AdChoosenAdExchangeRS;
-import RequestsAndResponses.AdvertisementExchangeRQ;
+import RequestsAndResponses.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.Socket;
-import java.util.Date;
+import java.security.SecureRandom;
+import java.util.*;
 
 /**
  * Created by Vulpes on 2016-12-04.
  */
 public class SupplySidePlatformServer {
+    private static SecureRandom random = new SecureRandom();
+
+    /**
+        przykładowy request
+     **/
     private static AdvertisementExchangeRQ advertisementExchangeRQ() {
         AdvertisementExchangeRQ output = new AdvertisementExchangeRQ();
         output.setFloorPrice((float) (Math.random()*10.0));
-        output.setCity("alaska");
-        output.setConversationId("aaaaabbbbbbcccc");
+        output.setConversationId(new BigInteger(130, random).toString(32));
+        output.setCity("KRK");
         output.setDateTime(new Date());
+        output.setTags(Arrays.asList("FISH", "FISHING", "TOOLS"));
+        output.setSystemdata("WINDOWS7, MOZILLAFIREFOX");
+        output.setCountry("PL");
+        output.setFormat(new AdFormat(100l, 500l, Visibility.SIDEWAY, Position.FIXED));
+        output.setRegion("KRK");
         return output;
     }
 
-    public static void main(String[] args) {
-        Socket socket = null;
-        try {
-            socket = new Socket("localhost", 9000);
+    private static void readFromFile(String filepath, List<AdvertisementExchangeRQ> list){
+        File file = new File(filepath);
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                AdvertisementExchangeRQ advertisementExchangeRQ = new AdvertisementExchangeRQ();
+                if (!Objects.equals(line.trim(), "")) {
+                    line = br.readLine();
+                    String[] data = line.split(" ");
+                    Date date = new Date();
+                    date.setYear(Integer.parseInt(data[0]));
+                    date.setMonth(Integer.parseInt(data[1]));
+                    date.setDate(Integer.parseInt(data[2]));
 
-            System.out.println("Connected!");
+                    line = br.readLine();
+                    data = line.split(" ");
+                    date.setHours(Integer.parseInt(data[0]));
+                    date.setMinutes(Integer.parseInt(data[0]));
+                    advertisementExchangeRQ.setDateTime(date);
 
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    line = br.readLine();
+                    advertisementExchangeRQ.setCity(line);
 
-            JAXBContext advertisementExchangeRQContext = JAXBContext.newInstance(AdvertisementExchangeRQ.class);
-            JAXBContext adChoosenAdExchangeRSContext = JAXBContext.newInstance(AdChoosenAdExchangeRS.class);
+                    line = br.readLine();
+                    advertisementExchangeRQ.setRegion(line);
 
-            Marshaller jaxbMarshaller = advertisementExchangeRQContext.createMarshaller();
-            jaxbMarshaller.marshal(advertisementExchangeRQ(), out);
-            out.write('\n');
-            out.flush();
-            System.out.println("Sent!");
+                    line = br.readLine();
+                    advertisementExchangeRQ.setCountry(line);
 
-            Unmarshaller jaxbUnmarshaller = adChoosenAdExchangeRSContext.createUnmarshaller();
-            String str = in.readLine();
-            AdChoosenAdExchangeRS adChoosenAdExchangeRS = (AdChoosenAdExchangeRS) jaxbUnmarshaller.unmarshal(new StringReader(str));
+                    line = br.readLine();
+                    advertisementExchangeRQ.setSystemdata(line);
 
-            System.out.println("Sold for: " + adChoosenAdExchangeRS.getPaidPrice());
+                    line = br.readLine();
+                    advertisementExchangeRQ.setTags(Arrays.asList(line.split(" ")));
 
-            socket.close();
+                    line = br.readLine();
+                    data = line.split(" ");
+                    advertisementExchangeRQ.setFormat(
+                            new AdFormat(Long.parseLong(data[0]),
+                                    Long.parseLong(data[1]),
+                                    Visibility.valueOf(data[2]),
+                                    Position.valueOf(data[3])));
 
+                    line = br.readLine();
+                    advertisementExchangeRQ.setFloorPrice(Float.parseFloat(line));
+
+                    list.add(advertisementExchangeRQ);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (JAXBException e) {
-            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        List<AdvertisementExchangeRQ> adList = new ArrayList<AdvertisementExchangeRQ>();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please enter: DATA_EXCHANGE_SERVER_PORT PATH_TO_FILE_WITH_ADS\n" +
+                "you can enter NONE as path to file, it will mean to use single example of request");
+        String command = scanner.nextLine();
+        String[] data = command.split(" ");
+
+        if (!data[1].equals("NONE")){
+            readFromFile(data[1], adList);
+        }
+        else adList.add(advertisementExchangeRQ());
+
+        for (AdvertisementExchangeRQ advertisementExchangeRQ : adList) {
+            /*
+             * simulates multiple connections to Data Exchange
+             */
+            Socket socket = null;
+            try {
+                socket = new Socket("localhost", Integer.parseInt(data[0]));
+
+                System.out.println("Connected!");
+
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                JAXBContext advertisementExchangeRQContext = JAXBContext.newInstance(AdvertisementExchangeRQ.class);
+                JAXBContext adChoosenAdExchangeRSContext = JAXBContext.newInstance(AdChoosenAdExchangeRS.class);
+
+                Marshaller jaxbMarshaller = advertisementExchangeRQContext.createMarshaller();
+                jaxbMarshaller.marshal(advertisementExchangeRQ, out);
+                out.write('\n');
+                out.flush();
+                System.out.println("Sent!");
+
+                Unmarshaller jaxbUnmarshaller = adChoosenAdExchangeRSContext.createUnmarshaller();
+                String str = in.readLine();
+                AdChoosenAdExchangeRS adChoosenAdExchangeRS = (AdChoosenAdExchangeRS) jaxbUnmarshaller.unmarshal(new StringReader(str));
+
+                System.out.println("Sold for: " + adChoosenAdExchangeRS.getPaidPrice());
+
+                socket.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JAXBException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

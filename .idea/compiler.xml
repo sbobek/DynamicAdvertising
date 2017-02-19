@@ -20,7 +20,7 @@
       <module name="DataExchange" target="1.5" />
       <module name="DemandSidePlatform" target="1.5" />
       <module name="DynamicAdvertising" target="1.5" />
-      <module name="SupplySidePlatform" target="1.5" />
+      <module name="SupplySidePlatform" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>

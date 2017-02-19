@@ -14,6 +14,13 @@ public class AdFormat implements Serializable {
     Visibility visibility;
     Position position;
 
+    public AdFormat(Long width, Long height, Visibility visibility, Position position) {
+        this.width = width;
+        this.height = height;
+        this.visibility = visibility;
+        this.position = position;
+    }
+
     @XmlElement
     public Long getWidth() {
         return width;
