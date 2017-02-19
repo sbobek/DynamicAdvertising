@@ -79,6 +79,7 @@ public class SupplySidePlatformServer {
                     line = br.readLine();
                     advertisementExchangeRQ.setFloorPrice(Float.parseFloat(line));
 
+                    advertisementExchangeRQ.setConversationId(new BigInteger(130, random).toString(32));
                     list.add(advertisementExchangeRQ);
                 }
             }
