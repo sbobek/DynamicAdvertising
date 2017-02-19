@@ -54,7 +54,7 @@ public class DSPIncomingConnectionHandler implements Runnable {
             BidVictoryAdExchangeRS bidVictoryAdExchangeRS = (BidVictoryAdExchangeRS) jaxbUnmarshaller.unmarshal(new StringReader(str));
 
             if (bidVictoryAdExchangeRS.getPaidPrice() != 0.0) {
-                System.out.println("I win!");
+                System.out.println("I win! and pay: "+ bidVictoryAdExchangeRS.getPaidPrice());
                 HeartService.incrementSoldAds();
                 HeartService.addPaidMoney(Double.valueOf(bidVictoryAdExchangeRS.getPaidPrice()));
             }

@@ -11,17 +11,17 @@ import java.security.SecureRandom;
 import java.util.*;
 
 /**
- * Created by Vulpes on 2016-12-04.
+ * TODO: add random ad generator, would be more fun than reading from file
  */
 public class SupplySidePlatformServer {
     private static SecureRandom random = new SecureRandom();
 
     /**
-        przykładowy request
+     * przykładowy request
      **/
     private static AdvertisementExchangeRQ advertisementExchangeRQ() {
         AdvertisementExchangeRQ output = new AdvertisementExchangeRQ();
-        output.setFloorPrice((float) (Math.random()*10.0));
+        output.setFloorPrice((float) (Math.random() * 10.0));
         output.setConversationId(new BigInteger(130, random).toString(32));
         output.setCity("KRK");
         output.setDateTime(new Date());
@@ -33,7 +33,7 @@ public class SupplySidePlatformServer {
         return output;
     }
 
-    private static void readFromFile(String filepath, List<AdvertisementExchangeRQ> list){
+    private static void readFromFile(String filepath, List<AdvertisementExchangeRQ> list) {
         File file = new File(filepath);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
@@ -97,10 +97,9 @@ public class SupplySidePlatformServer {
         String command = scanner.nextLine();
         String[] data = command.split(" ");
 
-        if (!data[1].equals("NONE")){
+        if (!data[1].equals("NONE")) {
             readFromFile(data[1], adList);
-        }
-        else adList.add(advertisementExchangeRQ());
+        } else adList.add(advertisementExchangeRQ());
 
         for (AdvertisementExchangeRQ advertisementExchangeRQ : adList) {
             /*

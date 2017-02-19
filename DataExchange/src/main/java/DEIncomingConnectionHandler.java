@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 /**
- * Created by Vulpes on 2016-12-03.
+ * TODO: add usage of different auction modes... Maybe I should create interface for that
  */
 public class DEIncomingConnectionHandler implements Runnable {
     List<Socket> dspServers = new ArrayList<Socket>();

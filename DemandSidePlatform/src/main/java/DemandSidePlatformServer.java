@@ -23,7 +23,7 @@ public class DemandSidePlatformServer {
         try {
             serverSocket = new ServerSocket(portNo);
             System.out.println("DSP Sever opened");
-            while(true){
+            while (true) {
                 Socket conversation = serverSocket.accept();
                 (new Thread(new DSPIncomingConnectionHandler(conversation, dsId))).start();
             }

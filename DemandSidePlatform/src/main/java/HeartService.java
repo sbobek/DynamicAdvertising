@@ -19,8 +19,10 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
-
-public class HeartService {
+/**
+ * TODO: find a way to run HeartDroid without it's LOGS... they pretty much trash my logs...
+ */
+public class HeartService implements RuleServiceInterface{
     XTTModel model = null;
 
     private static Integer soldAds = 0;
