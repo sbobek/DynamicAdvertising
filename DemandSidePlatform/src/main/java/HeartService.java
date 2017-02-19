@@ -17,6 +17,7 @@ import heart.parser.hmr.runtime.SourceFile;
 import heart.xtt.*;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 
 public class HeartService {
@@ -307,10 +308,14 @@ public class HeartService {
 
     public void runWithStartingState(State state) {
         try {
-            // Data driven inference -- we give only the starting tables names.
-            // The algorithm crawls the table network and fires only the necessary tables.
+            // To automate data driven interface we fire every table
+            // reason for this - we need information
+            // which tables to fire, but we know nothing about table names
+
             HeaRT.dataDrivenInference(model,
-                    new String[]{"season_checker", "weekend_checker"},
+                    (String[]) model.getTables().stream()
+                            .map(Table::getName)
+                            .collect(Collectors.toList()).toArray(),
                     new Configuration.Builder()
                             .setInitialState(state)
                             .build());
