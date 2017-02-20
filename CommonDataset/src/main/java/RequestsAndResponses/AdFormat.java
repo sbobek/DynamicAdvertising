@@ -14,6 +14,10 @@ public class AdFormat implements Serializable {
     Visibility visibility;
     Position position;
 
+    public AdFormat(){
+
+    }
+
     public AdFormat(Long width, Long height, Visibility visibility, Position position) {
         this.width = width;
         this.height = height;
