@@ -17,6 +17,7 @@ import heart.parser.hmr.runtime.SourceFile;
 import heart.xtt.*;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -314,10 +315,12 @@ public class HeartService implements RuleServiceInterface{
             // reason for this - we need information
             // which tables to fire, but we know nothing about table names
 
+            List<String> tableNames = model.getTables().stream()
+                    .map(Table::getName)
+                    .collect(Collectors.toList());
+
             HeaRT.dataDrivenInference(model,
-                    (String[]) model.getTables().stream()
-                            .map(Table::getName)
-                            .collect(Collectors.toList()).toArray(),
+                    (String[]) tableNames.toArray(new String[tableNames.size()]),
                     new Configuration.Builder()
                             .setInitialState(state)
                             .build());
