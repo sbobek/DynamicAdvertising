@@ -1,9 +1,6 @@
 import RequestsAndResponses.DemandSidePlatformRQ;
+import heart.*;
 import org.apache.commons.lang3.StringUtils;
-import heart.Configuration;
-import heart.HeaRT;
-import heart.State;
-import heart.StateElement;
 import heart.alsvfd.Formulae;
 import heart.alsvfd.SimpleNumeric;
 import heart.alsvfd.SimpleSymbolic;
@@ -15,6 +12,7 @@ import heart.exceptions.NotInTheDomainException;
 import heart.parser.hmr.HMRParser;
 import heart.parser.hmr.runtime.SourceFile;
 import heart.xtt.*;
+
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * TODO: find a way to run HeartDroid without it's LOGS... they pretty much trash my logs...
  */
-public class HeartService implements RuleServiceInterface{
+public class HeartService implements RuleServiceInterface {
     XTTModel model = null;
 
     private static Integer soldAds = 0;
@@ -35,7 +33,7 @@ public class HeartService implements RuleServiceInterface{
     }
 
     public static void setModelfile(String modelfile) {
-        if(modelfile.equals("NONE")) return;
+        if (modelfile.equals("NONE")) return;
         HeartService.modelfile = modelfile;
     }
 
@@ -57,6 +55,7 @@ public class HeartService implements RuleServiceInterface{
 
     HeartService() {
         getModel();
+        Debug.debugLevel = Debug.Level.SILENT;
     }
 
     public boolean getModel() {
@@ -339,10 +338,23 @@ public class HeartService implements RuleServiceInterface{
     public double getProposedPrice(DemandSidePlatformRQ demandSidePlatformRQ) {
         runWithStartingState(createState(demandSidePlatformRQ));
         State current = HeaRT.getWm().getCurrentState(model);
-        SimpleNumeric maxbid = (SimpleNumeric) current.getValueOfAttribute("maxbid_attr");
-        SimpleNumeric bidsize = (SimpleNumeric) current.getValueOfAttribute("bidsize_attr");
+
+        SimpleNumeric maxbid;
+        SimpleNumeric bidsize;
+
+        if (current.getValueOfAttribute("maxbid_attr") instanceof SimpleNumeric)
+            maxbid = (SimpleNumeric) current.getValueOfAttribute("maxbid_attr");
+        else
+            maxbid = new SimpleNumeric(0.0);
+
+        if (current.getValueOfAttribute("bidsize_attr") instanceof  SimpleNumeric)
+            bidsize = (SimpleNumeric) current.getValueOfAttribute("bidsize_attr");
+        else
+            bidsize = new SimpleNumeric(1.0);
+
         System.out.println("maxbid: " + maxbid.getValue());
         System.out.println("bidsize: " + bidsize.getValue());
+
         return maxbid.getValue() * bidsize.getValue();
     }
 
