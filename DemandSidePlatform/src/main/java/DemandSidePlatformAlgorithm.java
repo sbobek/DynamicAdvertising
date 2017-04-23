@@ -22,7 +22,7 @@ public class DemandSidePlatformAlgorithm implements Callable<DemandSidePlatformR
 
     /**
      * here be dragons!
-     * this function shall decide which advertisement shall be sent and for what bid value
+     * this function shall decide advertisement shall be sent for what bid value
      * basing data on request sent to DSP and (if available) uder data from Data Exchange
      * @return
      */

@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 /**
@@ -18,6 +19,7 @@ public class DemandSidePlatformServer {
         Integer portNo = Integer.parseInt(command.split(" ")[2]);
 
         HeartService.setModelfile(model);
+        new HeartService();
 
         ServerSocket serverSocket = null;
         try {

@@ -18,11 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * TODO: find a way to run HeartDroid without it's LOGS... they pretty much trash my logs...
- */
 public class HeartService implements RuleServiceInterface {
-    XTTModel model = null;
+    private static XTTModel model = null;
 
     private static Integer soldAds = 0;
     private static Double paidMoney = 0.0;
@@ -54,8 +51,10 @@ public class HeartService implements RuleServiceInterface {
     }
 
     HeartService() {
-        getModel();
-        Debug.debugLevel = Debug.Level.SILENT;
+        if (model == null) {
+            getModel();
+            Debug.debugLevel = Debug.Level.SILENT;
+        }
     }
 
     public boolean getModel() {

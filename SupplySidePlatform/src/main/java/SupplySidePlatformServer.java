@@ -8,6 +8,7 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -88,7 +89,7 @@ public class SupplySidePlatformServer {
         }
     }
 
-    public static void main(String[] args) {
+    private static void algorithm(){
         List<AdvertisementExchangeRQ> adList = new ArrayList<AdvertisementExchangeRQ>();
         Scanner scanner = new Scanner(System.in);
 
@@ -96,6 +97,8 @@ public class SupplySidePlatformServer {
                 "you can enter NONE as path to file, it will mean to use single example of request");
         String command = scanner.nextLine();
         String[] data = command.split(" ");
+
+        LocalDateTime start = LocalDateTime.now();
 
         if (!data[1].equals("NONE")) {
             readFromFile(data[1], adList);
@@ -137,5 +140,18 @@ public class SupplySidePlatformServer {
                 e.printStackTrace();
             }
         }
+
+        LocalDateTime stop = LocalDateTime.now();
+        long diffInMilli = java.time.Duration.between(start, stop).toMillis();
+        long diffInSeconds = java.time.Duration.between(start, stop).getSeconds();
+        long diffInMinutes = java.time.Duration.between(start, stop).toMinutes();
+
+        System.out.println("Work took full " + diffInMinutes + " minutes!");
+        System.out.println("Work took full " + diffInSeconds + " seconds!");
+        System.out.println("Work took full " + diffInMilli + " miliseconds!");
+    }
+
+    public static void main(String[] args) {
+        algorithm();
     }
 }

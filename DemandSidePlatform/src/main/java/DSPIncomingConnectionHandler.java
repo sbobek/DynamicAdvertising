@@ -8,6 +8,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -25,6 +26,7 @@ public class DSPIncomingConnectionHandler implements Runnable {
     }
 
     public void run() {
+//        LocalDateTime start = LocalDateTime.now();
         try {
             System.out.println("New connection established!");
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -67,5 +69,13 @@ public class DSPIncomingConnectionHandler implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+//        LocalDateTime stop = LocalDateTime.now();
+//        long diffInMilli = java.time.Duration.between(start, stop).toMillis();
+//        long diffInSeconds = java.time.Duration.between(start, stop).getSeconds();
+//        long diffInMinutes = java.time.Duration.between(start, stop).toMinutes();
+//
+//        System.out.println("Work took full " + diffInMinutes + " minutes!");
+//        System.out.println("Work took full " + diffInSeconds + " seconds!");
+//        System.out.println("Work took full " + diffInMilli + " miliseconds!");
     }
 }
