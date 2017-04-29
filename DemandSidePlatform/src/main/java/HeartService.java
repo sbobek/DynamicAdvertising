@@ -30,7 +30,7 @@ public class HeartService implements RuleServiceInterface {
     }
 
     public static void setModelfile(String modelfile) {
-        if (modelfile.equals("NONE")) return;
+        if (modelfile == null || modelfile.equals("NONE")) return;
         HeartService.modelfile = modelfile;
     }
 

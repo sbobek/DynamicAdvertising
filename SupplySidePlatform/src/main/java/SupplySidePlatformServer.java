@@ -11,18 +11,17 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 
-/**
- * TODO: add random ad generator, would be more fun than reading from file
- */
 public class SupplySidePlatformServer {
     private static SecureRandom random = new SecureRandom();
+    private static List<AdvertisementExchangeRQ> adList = new ArrayList<>();
+    private static int port;
 
     /**
      * przykładowy request
      **/
     private static AdvertisementExchangeRQ advertisementExchangeRQ() {
         AdvertisementExchangeRQ output = new AdvertisementExchangeRQ();
-        output.setFloorPrice((float) (Math.random() * 10.0));
+        output.setFloorPrice((float) (Math.random() * 100.0));
         output.setConversationId(new BigInteger(130, random).toString(32));
         output.setCity("KRK");
         output.setDateTime(new Date());
@@ -89,28 +88,55 @@ public class SupplySidePlatformServer {
         }
     }
 
-    private static void algorithm(){
-        List<AdvertisementExchangeRQ> adList = new ArrayList<AdvertisementExchangeRQ>();
-        Scanner scanner = new Scanner(System.in);
+    static int starterData(String[] args) {
+        if (args.length < 1) {
+            Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Please enter: DATA_EXCHANGE_SERVER_PORT PATH_TO_FILE_WITH_ADS\n" +
-                "you can enter NONE as path to file, it will mean to use single example of request");
-        String command = scanner.nextLine();
-        String[] data = command.split(" ");
+            System.out.println("Please enter: DATA_EXCHANGE_SERVER_PORT PATH_TO_FILE_WITH_ADS\n" +
+                    "you can enter NONE as path to file, it will mean to use single example of request");
+            String command = scanner.nextLine();
+            String[] data = command.split(" ");
+            port = Integer.parseInt(data[0]);
 
-        LocalDateTime start = LocalDateTime.now();
+            if (!data[1].equals("NONE")) {
+                readFromFile(data[1], adList);
+            } else adList.add(advertisementExchangeRQ());
+        } else {
+            int i = 0;
 
-        if (!data[1].equals("NONE")) {
-            readFromFile(data[1], adList);
-        } else adList.add(advertisementExchangeRQ());
+            while (i < args.length) {
+                switch (args[i]) {
+                    case "-port":
+                        i++;
+                        if (!(i < args.length))
+                            return -1;
+                        port = Integer.parseInt(args[i]);
+                        break;
+                    case "-file":
+                        i++;
+                        if (!(i < args.length))
+                            return -1;
+                        readFromFile(args[i], adList);
+                        break;
+                }
+                i++;
+            }
+            if (adList.isEmpty())
+                adList.add(advertisementExchangeRQ());
+        }
+        return 0;
+    }
+
+    private static void algorithm(String[] args){
+        if (starterData(args) == -1) {
+            System.err.println("Some of arguments were wrong!");
+            return;
+        }
 
         for (AdvertisementExchangeRQ advertisementExchangeRQ : adList) {
-            /*
-             * simulates multiple connections to Data Exchange
-             */
             Socket socket = null;
             try {
-                socket = new Socket("localhost", Integer.parseInt(data[0]));
+                socket = new Socket("localhost", port);
 
                 System.out.println("Connected!");
 
@@ -140,18 +166,17 @@ public class SupplySidePlatformServer {
                 e.printStackTrace();
             }
         }
+    }
 
+    public static void main(String[] args) {
+        LocalDateTime start = LocalDateTime.now();
+        algorithm(args);
         LocalDateTime stop = LocalDateTime.now();
         long diffInMilli = java.time.Duration.between(start, stop).toMillis();
         long diffInSeconds = java.time.Duration.between(start, stop).getSeconds();
         long diffInMinutes = java.time.Duration.between(start, stop).toMinutes();
-
         System.out.println("Work took full " + diffInMinutes + " minutes!");
         System.out.println("Work took full " + diffInSeconds + " seconds!");
         System.out.println("Work took full " + diffInMilli + " miliseconds!");
-    }
-
-    public static void main(String[] args) {
-        algorithm();
     }
 }

@@ -11,7 +11,7 @@ public class DemandSidePlatformAlgorithm implements Callable<DemandSidePlatformR
     DemandSidePlatformRQ demandSidePlatformRQ;
     String demandSidePlatformId;
     DataExchangeGetRS dataExchangeGetRS;
-    HeartService heartService = new HeartService();
+    RuleServiceInterface ruleServiceInterface = new HeartService();
 
 
     public DemandSidePlatformAlgorithm(DemandSidePlatformRQ demandSidePlatformRQ, DataExchangeGetRS dataExchangeGetRS, String platformId){
@@ -30,7 +30,7 @@ public class DemandSidePlatformAlgorithm implements Callable<DemandSidePlatformR
         DemandSidePlatformRS demandSidePlatformRS = new DemandSidePlatformRS();
         demandSidePlatformRS.setConversationId(demandSidePlatformRQ.getConversationId());
         demandSidePlatformRS.setAdvertisementUrl("goodUrl.com/advertisement.gif");
-        demandSidePlatformRS.setBidPrice((float) (heartService.getProposedPrice(demandSidePlatformRQ) + Math.random()));
+        demandSidePlatformRS.setBidPrice((float) (ruleServiceInterface.getProposedPrice(demandSidePlatformRQ) + Math.random()));
         demandSidePlatformRS.setDemandSidePlatformId(demandSidePlatformId);
 
         return demandSidePlatformRS;

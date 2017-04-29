@@ -8,15 +8,55 @@ import java.util.Scanner;
  * Created by Vulpes on 2016-12-03.
  */
 public class DemandSidePlatformServer {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to DSP! Type: DSP_MODEL_PATH DSP_ID PORT_NUMBER\n " +
-                "using 'NONE' as DSP_MODEL_PATH defaults to standard example model");
-        String command = scanner.nextLine();
+    private static String model = null;
+    private static String dsId = null;
+    private static Integer portNo = null;
 
-        String model = command.split(" ")[0];
-        String dsId = command.split(" ")[1];
-        Integer portNo = Integer.parseInt(command.split(" ")[2]);
+    static int starterData(String[] args) {
+        if (args.length < 1) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Welcome to DSP! Type: DSP_MODEL_PATH DSP_ID PORT_NUMBER\n " +
+                    "using 'NONE' as DSP_MODEL_PATH defaults to standard example model");
+            String command = scanner.nextLine();
+
+            model = command.split(" ")[0];
+            dsId = command.split(" ")[1];
+            portNo = Integer.parseInt(command.split(" ")[2]);
+        } else {
+            int i = 0;
+
+            while (i < args.length) {
+                switch (args[i]) {
+                    case "-id":
+                        i++;
+                        if (!(i < args.length))
+                            return -1;
+                        dsId = args[i];
+                        break;
+                    case "-port":
+                        i++;
+                        if (!(i < args.length))
+                            return -1;
+                        portNo = Integer.parseInt(args[i]);
+                        break;
+                    case "-model":
+                        i++;
+                        if (!(i < args.length))
+                            return -1;
+                        model = args[i];
+                        break;
+                }
+                i++;
+            }
+        }
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        if (starterData(args) == -1) {
+            System.err.println("Some of arguments were wrong!");
+            return;
+        }
 
         HeartService.setModelfile(model);
         new HeartService();
