@@ -15,6 +15,8 @@ public class SupplySidePlatformServer {
     private static SecureRandom random = new SecureRandom();
     private static List<AdvertisementExchangeRQ> adList = new ArrayList<>();
     private static int port;
+    static HashMap<String, Float> paid = new HashMap<>();
+    static HashMap<String, Integer> sold = new HashMap<>();
 
     /**
      * przykładowy request
@@ -88,6 +90,22 @@ public class SupplySidePlatformServer {
         }
     }
 
+    private static void generateRandomAds(Integer amount, List<AdvertisementExchangeRQ> list) {
+        for (int i = 0; i < amount; i++) {
+            AdvertisementExchangeRQ output = new AdvertisementExchangeRQ();
+            output.setFloorPrice((float) (Math.random() * 100.0));
+            output.setConversationId(new BigInteger(130, random).toString(32));
+            output.setCity("KRK");
+            output.setDateTime(new Date());
+            output.setTags(Arrays.asList("FISH", "FISHING", "TOOLS"));
+            output.setSystemdata("WINDOWS7, MOZILLAFIREFOX");
+            output.setCountry("PL");
+            output.setFormat(new AdFormat((long) (Math.random() * 200.0), (long) (Math.random() * 200.0), Visibility.getRandom(), Position.getRandom()));
+            output.setRegion("KRK");
+            list.add(output);
+        }
+    }
+
     static int starterData(String[] args) {
         if (args.length < 1) {
             Scanner scanner = new Scanner(System.in);
@@ -118,6 +136,12 @@ public class SupplySidePlatformServer {
                             return -1;
                         readFromFile(args[i], adList);
                         break;
+                    case "-random":
+                        i++;
+                        if (!(i < args.length))
+                            return -1;
+                        generateRandomAds(Integer.parseInt(args[i]), adList);
+                        break;
                 }
                 i++;
             }
@@ -127,7 +151,7 @@ public class SupplySidePlatformServer {
         return 0;
     }
 
-    private static void algorithm(String[] args){
+    private static void algorithm(String[] args) {
         if (starterData(args) == -1) {
             System.err.println("Some of arguments were wrong!");
             return;
@@ -157,6 +181,15 @@ public class SupplySidePlatformServer {
                 AdChoosenAdExchangeRS adChoosenAdExchangeRS = (AdChoosenAdExchangeRS) jaxbUnmarshaller.unmarshal(new StringReader(str));
 
                 System.out.println("Sold for: " + adChoosenAdExchangeRS.getPaidPrice());
+                System.out.println("Sold for: " + adChoosenAdExchangeRS.getAdvertisementUrl());
+                if (!paid.containsKey(adChoosenAdExchangeRS.getAdvertisementUrl()))
+                    paid.put(adChoosenAdExchangeRS.getAdvertisementUrl(), 0.00f);
+                if (!sold.containsKey(adChoosenAdExchangeRS.getAdvertisementUrl()))
+                    sold.put(adChoosenAdExchangeRS.getAdvertisementUrl(), 0);
+
+                paid.put(adChoosenAdExchangeRS.getAdvertisementUrl(), paid.get(adChoosenAdExchangeRS.getAdvertisementUrl()) + adChoosenAdExchangeRS.getPaidPrice());
+                sold.put(adChoosenAdExchangeRS.getAdvertisementUrl(), sold.get(adChoosenAdExchangeRS.getAdvertisementUrl()) + 1);
+
 
                 socket.close();
 
@@ -178,5 +211,9 @@ public class SupplySidePlatformServer {
         System.out.println("Work took full " + diffInMinutes + " minutes!");
         System.out.println("Work took full " + diffInSeconds + " seconds!");
         System.out.println("Work took full " + diffInMilli + " miliseconds!");
+
+        for (String key : sold.keySet()) {
+            System.out.println("Sold " + sold.get(key) + " to " + key + " for sum of " + paid.get(key));
+        }
     }
 }

@@ -29,7 +29,7 @@ public class DemandSidePlatformAlgorithm implements Callable<DemandSidePlatformR
     private DemandSidePlatformRS decideBidValue(){
         DemandSidePlatformRS demandSidePlatformRS = new DemandSidePlatformRS();
         demandSidePlatformRS.setConversationId(demandSidePlatformRQ.getConversationId());
-        demandSidePlatformRS.setAdvertisementUrl("goodUrl.com/advertisement.gif");
+        demandSidePlatformRS.setAdvertisementUrl("goodUrl.com/" + demandSidePlatformId);
         demandSidePlatformRS.setBidPrice((float) (ruleServiceInterface.getProposedPrice(demandSidePlatformRQ) + Math.random()));
         demandSidePlatformRS.setDemandSidePlatformId(demandSidePlatformId);
 
