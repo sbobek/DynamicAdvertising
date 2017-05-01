@@ -130,6 +130,7 @@ public class DEIncomingConnectionHandler implements Runnable {
                                 demandSidePlatformRS.getConversationId(),
                                 "NULL",
                                 0.0f);
+                        System.out.println("Nobody wins");
                     }
                     jaxbMarshaller.marshal(finalVictor, out);
                     out.write('\n');
@@ -170,7 +171,7 @@ public class DEIncomingConnectionHandler implements Runnable {
                         DemandSidePlatformRS demandSidePlatformRS = mapaAukcyjna.get(socket).get();
                         bidVictoryAdExchangeRS = new BidVictoryAdExchangeRS(
                                 demandSidePlatformRS.getConversationId(),
-                                "",
+                                "NULL",
                                 0.0f);
                     }
 
