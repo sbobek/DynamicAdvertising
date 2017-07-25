@@ -29,7 +29,7 @@ public class HeartService implements RuleServiceInterface {
         return modelfile;
     }
 
-    public static void setModelfile(String modelfile) {
+    static void setModelfile(String modelfile) {
         if (modelfile == null || modelfile.equals("NONE")) return;
         HeartService.modelfile = modelfile;
     }
@@ -355,6 +355,11 @@ public class HeartService implements RuleServiceInterface {
         System.out.println("bidsize: " + bidsize.getValue());
 
         return maxbid.getValue() * bidsize.getValue();
+    }
+
+    @Override
+    public void startUpConfiguration(String... arguments) {
+        setModelfile(arguments[0]);
     }
 
 }
