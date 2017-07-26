@@ -8,10 +8,6 @@ import java.util.Scanner;
  * Created by Vulpes on 2016-12-03.
  */
 public class DemandSidePlatformServer {
-    private static String model = null;
-    private static String dsId = null;
-    private static Integer portNo = null;
-
     static int starterData(String[] args) {
         if (args.length < 1) {
             Scanner scanner = new Scanner(System.in);
@@ -19,9 +15,9 @@ public class DemandSidePlatformServer {
                     "using 'NONE' as DSP_MODEL_PATH defaults to standard example model");
             String command = scanner.nextLine();
 
-            model = command.split(" ")[0];
-            dsId = command.split(" ")[1];
-            portNo = Integer.parseInt(command.split(" ")[2]);
+            Environment.setModel(command.split(" ")[0]);
+            Environment.setDsId(command.split(" ")[1]);
+            Environment.setPortNo(Integer.parseInt(command.split(" ")[2]));
         } else {
             int i = 0;
 
@@ -31,19 +27,19 @@ public class DemandSidePlatformServer {
                         i++;
                         if (!(i < args.length))
                             return -1;
-                        dsId = args[i];
+                        Environment.setDsId(args[i]);
                         break;
                     case "-port":
                         i++;
                         if (!(i < args.length))
                             return -1;
-                        portNo = Integer.parseInt(args[i]);
+                        Environment.setPortNo(Integer.parseInt(args[i]));
                         break;
                     case "-model":
                         i++;
                         if (!(i < args.length))
                             return -1;
-                        model = args[i];
+                        Environment.setModel(args[i]);
                         break;
                 }
                 i++;
@@ -58,16 +54,13 @@ public class DemandSidePlatformServer {
             return;
         }
 
-        HeartService.setModelfile(model);
-        new HeartService();
-
         ServerSocket serverSocket = null;
         try {
-            serverSocket = new ServerSocket(portNo);
+            serverSocket = new ServerSocket(Environment.getPortNo());
             System.out.println("DSP Sever opened");
             while (true) {
                 Socket conversation = serverSocket.accept();
-                (new Thread(new DSPIncomingConnectionHandler(conversation, dsId))).start();
+                (new Thread(new DSPIncomingConnectionHandler(conversation, Environment.getDsId()))).start();
             }
         } catch (IOException e) {
             e.printStackTrace();

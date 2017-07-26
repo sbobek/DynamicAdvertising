@@ -51,6 +51,7 @@ public class HeartService implements RuleServiceInterface {
     }
 
     HeartService() {
+        startUpConfiguration(Environment.getModel());
         if (model == null) {
             getModel();
             Debug.debugLevel = Debug.Level.SILENT;
