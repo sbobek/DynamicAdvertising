@@ -9,15 +9,13 @@ import java.util.concurrent.Callable;
  */
 public class DemandSidePlatformAlgorithm implements Callable<DemandSidePlatformRS>{
     DemandSidePlatformRQ demandSidePlatformRQ;
-    String demandSidePlatformId;
     DataExchangeGetRS dataExchangeGetRS;
     RuleServiceInterface ruleServiceInterface = new HeartService();
 
 
-    public DemandSidePlatformAlgorithm(DemandSidePlatformRQ demandSidePlatformRQ, DataExchangeGetRS dataExchangeGetRS, String platformId){
+    public DemandSidePlatformAlgorithm(DemandSidePlatformRQ demandSidePlatformRQ, DataExchangeGetRS dataExchangeGetRS){
         this.demandSidePlatformRQ = demandSidePlatformRQ;
         this.dataExchangeGetRS = dataExchangeGetRS;
-        this.demandSidePlatformId = platformId;
     }
 
     /**
@@ -29,9 +27,9 @@ public class DemandSidePlatformAlgorithm implements Callable<DemandSidePlatformR
     private DemandSidePlatformRS decideBidValue(){
         DemandSidePlatformRS demandSidePlatformRS = new DemandSidePlatformRS();
         demandSidePlatformRS.setConversationId(demandSidePlatformRQ.getConversationId());
-        demandSidePlatformRS.setAdvertisementUrl("goodUrl.com/" + demandSidePlatformId);
+        demandSidePlatformRS.setAdvertisementUrl("goodUrl.com/" + Environment.getDsId());
         demandSidePlatformRS.setBidPrice((float) (ruleServiceInterface.getProposedPrice(demandSidePlatformRQ) + Math.random()));
-        demandSidePlatformRS.setDemandSidePlatformId(demandSidePlatformId);
+        demandSidePlatformRS.setDemandSidePlatformId(Environment.getDsId());
 
         return demandSidePlatformRS;
     }

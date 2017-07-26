@@ -60,7 +60,7 @@ public class DemandSidePlatformServer {
             System.out.println("DSP Sever opened");
             while (true) {
                 Socket conversation = serverSocket.accept();
-                (new Thread(new DSPIncomingConnectionHandler(conversation, Environment.getDsId()))).start();
+                (new Thread(new DSPIncomingConnectionHandler(conversation))).start();
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -18,11 +18,9 @@ import java.util.concurrent.Future;
  */
 public class DSPIncomingConnectionHandler implements Runnable {
     Socket socket;
-    String platformID;
 
-    public DSPIncomingConnectionHandler(Socket socket, String platformId) {
+    public DSPIncomingConnectionHandler(Socket socket) {
         this.socket = socket;
-        this.platformID = platformId;
     }
 
     public void run() {
@@ -41,7 +39,7 @@ public class DSPIncomingConnectionHandler implements Runnable {
             DemandSidePlatformRQ demandSidePlatformRQ = (DemandSidePlatformRQ) jaxbUnmarshaller.unmarshal(new StringReader(str));
             System.out.println("Ad for: " + demandSidePlatformRQ.getCity());
 
-            DemandSidePlatformAlgorithm demandSidePlatformAlgorithm = new DemandSidePlatformAlgorithm(demandSidePlatformRQ, null, platformID);
+            DemandSidePlatformAlgorithm demandSidePlatformAlgorithm = new DemandSidePlatformAlgorithm(demandSidePlatformRQ, null);
             ExecutorService executor = Executors.newFixedThreadPool(1);
             Future<DemandSidePlatformRS> future = executor.submit(demandSidePlatformAlgorithm);
             Marshaller jaxbMarshaller = demandSidePlatformRSContext.createMarshaller();
