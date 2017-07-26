@@ -42,7 +42,6 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/AdvertisementExchange/pom.xml" />
         <option value="$PROJECT_DIR$/CommonDataset/pom.xml" />
         <option value="$PROJECT_DIR$/DataExchange/pom.xml" />
         <option value="$PROJECT_DIR$/DemandSidePlatform/pom.xml" />

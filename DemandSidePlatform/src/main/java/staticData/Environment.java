@@ -1,3 +1,5 @@
+package staticData;
+
 /**
  * Created by Vulpes on 2017-07-26.
  */

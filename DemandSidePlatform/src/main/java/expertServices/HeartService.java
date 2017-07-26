@@ -1,3 +1,5 @@
+package expertServices;
+
 import RequestsAndResponses.DemandSidePlatformRQ;
 import heart.*;
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +14,7 @@ import heart.exceptions.NotInTheDomainException;
 import heart.parser.hmr.HMRParser;
 import heart.parser.hmr.runtime.SourceFile;
 import heart.xtt.*;
+import staticData.Environment;
 
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -50,7 +53,7 @@ public class HeartService implements RuleServiceInterface {
         HeartService.paidMoney += paidMoney;
     }
 
-    HeartService() {
+    public HeartService() {
         startUpConfiguration(Environment.getModel());
         if (model == null) {
             getModel();
@@ -347,7 +350,7 @@ public class HeartService implements RuleServiceInterface {
         else
             maxbid = new SimpleNumeric(0.0);
 
-        if (current.getValueOfAttribute("bidsize_attr") instanceof  SimpleNumeric)
+        if (current.getValueOfAttribute("bidsize_attr") instanceof SimpleNumeric)
             bidsize = (SimpleNumeric) current.getValueOfAttribute("bidsize_attr");
         else
             bidsize = new SimpleNumeric(1.0);
