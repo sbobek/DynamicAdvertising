@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class HeartService implements RuleServiceInterface {
+public class HeartService implements BiddingExpertService {
     private static XTTModel model = null;
 
     private static Integer soldAds = 0;

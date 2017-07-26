@@ -41,9 +41,9 @@ public class DSPIncomingConnectionHandler implements Runnable {
             DemandSidePlatformRQ demandSidePlatformRQ = (DemandSidePlatformRQ) jaxbUnmarshaller.unmarshal(new StringReader(str));
             System.out.println("Ad for: " + demandSidePlatformRQ.getCity());
 
-            DemandSidePlatformAlgorithm demandSidePlatformAlgorithm = new DemandSidePlatformAlgorithm(demandSidePlatformRQ, null);
+            BiddingAlgorithm biddingAlgorithm = new BiddingAlgorithm(demandSidePlatformRQ, null);
             ExecutorService executor = Executors.newFixedThreadPool(1);
-            Future<DemandSidePlatformRS> future = executor.submit(demandSidePlatformAlgorithm);
+            Future<DemandSidePlatformRS> future = executor.submit(biddingAlgorithm);
             Marshaller jaxbMarshaller = demandSidePlatformRSContext.createMarshaller();
 
             jaxbMarshaller.marshal(future.get(), out);

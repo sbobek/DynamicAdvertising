@@ -4,7 +4,7 @@ import RequestsAndResponses.DataExchangeGetRS;
 import RequestsAndResponses.DemandSidePlatformRQ;
 import RequestsAndResponses.DemandSidePlatformRS;
 import expertServices.HeartService;
-import expertServices.RuleServiceInterface;
+import expertServices.BiddingExpertService;
 import staticData.Environment;
 
 import java.util.concurrent.Callable;
@@ -12,13 +12,13 @@ import java.util.concurrent.Callable;
 /**
  * Created by Vulpes on 2016-12-03.
  */
-public class DemandSidePlatformAlgorithm implements Callable<DemandSidePlatformRS>{
+public class BiddingAlgorithm implements Callable<DemandSidePlatformRS>{
     DemandSidePlatformRQ demandSidePlatformRQ;
     DataExchangeGetRS dataExchangeGetRS;
-    RuleServiceInterface ruleServiceInterface = new HeartService();
+    BiddingExpertService biddingExpertService = new HeartService();
 
 
-    public DemandSidePlatformAlgorithm(DemandSidePlatformRQ demandSidePlatformRQ, DataExchangeGetRS dataExchangeGetRS){
+    public BiddingAlgorithm(DemandSidePlatformRQ demandSidePlatformRQ, DataExchangeGetRS dataExchangeGetRS){
         this.demandSidePlatformRQ = demandSidePlatformRQ;
         this.dataExchangeGetRS = dataExchangeGetRS;
     }
@@ -33,7 +33,7 @@ public class DemandSidePlatformAlgorithm implements Callable<DemandSidePlatformR
         DemandSidePlatformRS demandSidePlatformRS = new DemandSidePlatformRS();
         demandSidePlatformRS.setConversationId(demandSidePlatformRQ.getConversationId());
         demandSidePlatformRS.setAdvertisementUrl("goodUrl.com/" + Environment.getDsId());
-        demandSidePlatformRS.setBidPrice((float) (ruleServiceInterface.getProposedPrice(demandSidePlatformRQ) + Math.random()));
+        demandSidePlatformRS.setBidPrice((float) (biddingExpertService.getProposedPrice(demandSidePlatformRQ) + Math.random()));
         demandSidePlatformRS.setDemandSidePlatformId(Environment.getDsId());
 
         return demandSidePlatformRS;
