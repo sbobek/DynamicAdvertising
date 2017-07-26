@@ -93,7 +93,7 @@ public class SupplySidePlatformServer {
     private static void generateRandomAds(Integer amount, List<AdvertisementExchangeRQ> list) {
         for (int i = 0; i < amount; i++) {
             AdvertisementExchangeRQ output = new AdvertisementExchangeRQ();
-            output.setFloorPrice((float) (Math.random() * 30.0));
+            output.setFloorPrice((float) (Math.random() * 1.0));
             output.setConversationId(new BigInteger(130, random).toString(32));
             output.setCity("KRK");
             output.setDateTime(new Date());
