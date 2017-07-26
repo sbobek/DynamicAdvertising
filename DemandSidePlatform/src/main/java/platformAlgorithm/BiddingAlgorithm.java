@@ -13,9 +13,9 @@ import java.util.concurrent.Callable;
  * Created by Vulpes on 2016-12-03.
  */
 public class BiddingAlgorithm implements Callable<DemandSidePlatformRS>{
-    DemandSidePlatformRQ demandSidePlatformRQ;
-    DataExchangeGetRS dataExchangeGetRS;
-    BiddingExpertService biddingExpertService = new HeartService();
+    private DemandSidePlatformRQ demandSidePlatformRQ;
+    private DataExchangeGetRS dataExchangeGetRS;
+    private BiddingExpertService biddingExpertService = new HeartService();
 
 
     public BiddingAlgorithm(DemandSidePlatformRQ demandSidePlatformRQ, DataExchangeGetRS dataExchangeGetRS){

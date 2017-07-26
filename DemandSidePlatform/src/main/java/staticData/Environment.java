@@ -6,7 +6,7 @@ package staticData;
 public class Environment {
     private static Environment instance = null;
 
-    protected Environment() {
+    private Environment() {
         // Exists only to defeat instantiation.
     }
 

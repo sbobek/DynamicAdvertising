@@ -19,7 +19,7 @@ import java.util.concurrent.Future;
  * Created by Vulpes on 2016-12-03.
  */
 public class DSPIncomingConnectionHandler implements Runnable {
-    Socket socket;
+    private Socket socket;
 
     public DSPIncomingConnectionHandler(Socket socket) {
         this.socket = socket;
@@ -62,10 +62,6 @@ public class DSPIncomingConnectionHandler implements Runnable {
             }
             socket.close();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JAXBException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

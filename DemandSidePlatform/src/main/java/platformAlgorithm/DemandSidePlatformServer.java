@@ -11,7 +11,7 @@ import java.util.Scanner;
  * Created by Vulpes on 2016-12-03.
  */
 public class DemandSidePlatformServer {
-    static int starterData(String[] args) {
+    private static int starterData(String[] args) {
         if (args.length < 1) {
             Scanner scanner = new Scanner(System.in);
             System.out.println("Welcome to DSP! Type: DSP_MODEL_PATH DSP_ID PORT_NUMBER\n " +
