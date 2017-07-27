@@ -14,12 +14,11 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
-      <module name="AdvertisementExchange" target="1.8" />
-      <module name="CommonDataset" target="1.5" />
-      <module name="DataExchange" target="1.5" />
+      <module name="CommonDataset" target="1.8" />
+      <module name="DataExchange" target="1.8" />
       <module name="DemandSidePlatform" target="1.8" />
-      <module name="DynamicAdvertising" target="1.5" />
-      <module name="SupplySidePlatform" target="1.7" />
+      <module name="DynamicAdvertising" target="1.8" />
+      <module name="SupplySidePlatform" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

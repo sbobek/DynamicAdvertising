@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AdExchange/AdExchange.iml" filepath="$PROJECT_DIR$/AdExchange/AdExchange.iml" />
       <module fileurl="file://$PROJECT_DIR$/CommonDataset/CommonDataset.iml" filepath="$PROJECT_DIR$/CommonDataset/CommonDataset.iml" />
-      <module fileurl="file://$PROJECT_DIR$/DataExchange/DataExchange.iml" filepath="$PROJECT_DIR$/DataExchange/DataExchange.iml" />
       <module fileurl="file://$PROJECT_DIR$/DemandSidePlatform/DemandSidePlatform.iml" filepath="$PROJECT_DIR$/DemandSidePlatform/DemandSidePlatform.iml" />
       <module fileurl="file://$PROJECT_DIR$/DynamicAdvertising.iml" filepath="$PROJECT_DIR$/DynamicAdvertising.iml" />
       <module fileurl="file://$PROJECT_DIR$/SupplySidePlatform/SupplySidePlatform.iml" filepath="$PROJECT_DIR$/SupplySidePlatform/SupplySidePlatform.iml" />

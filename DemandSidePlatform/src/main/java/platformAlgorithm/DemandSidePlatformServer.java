@@ -12,7 +12,7 @@ import java.util.Scanner;
  */
 public class DemandSidePlatformServer {
     private static int starterData(String[] args) {
-        if (args.length < 1) {
+        if (args.length < 2) {
             Scanner scanner = new Scanner(System.in);
             System.out.println("Welcome to DSP! Type: DSP_MODEL_PATH DSP_ID PORT_NUMBER\n " +
                     "using 'NONE' as DSP_MODEL_PATH defaults to standard example model");
