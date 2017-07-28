@@ -26,7 +26,7 @@ public class HeartService implements BiddingExpertService {
 
     private static Integer soldAds = 0;
     private static Double paidMoney = 0.0;
-    private static String modelfile = "src/main/resources/XTT2Model.hmr";
+    private static String modelfile = "src/main/resources/WeekDayModel.hmr";
 
     public static String getModelfile() {
         return modelfile;

@@ -134,7 +134,10 @@ public class SupplySidePlatformServer {
                         i++;
                         if (!(i < args.length))
                             return -1;
-                        readFromFile(args[i], adList);
+                        if (Objects.equals(args[i], "NONE"))
+                            adList.add(advertisementExchangeRQ());
+                        else
+                            readFromFile(args[i], adList);
                         break;
                     case "-random":
                         i++;
