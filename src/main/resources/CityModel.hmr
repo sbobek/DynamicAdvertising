@@ -223,21 +223,21 @@ xrule undefined1501230330551/16:
 
 xrule undefined1501230399394/17:
     [
-        day_of_week_attr 'MON','TUE','WED','THU','FRI'
+        day_of_week_attr in ['MON','TUE','WED','THU','FRI']
     ]
     ==>
     [
-        maxbid_attr set 100.00
+        maxbid_attr set 10.00
     ].
     #1
 
 xrule undefined1501230399394/18:
     [
-        day_of_week_attr 'SAT','SUN'
+        day_of_week_attr in['SAT','SUN']
     ]
     ==>
     [
-        maxbid_attr set 50.00
+        maxbid_attr set 5.00
     ].
     #1
 
