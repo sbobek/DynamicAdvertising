@@ -95,13 +95,13 @@ public class SupplySidePlatformServer {
             AdvertisementExchangeRQ output = new AdvertisementExchangeRQ();
             output.setFloorPrice((float) (Math.random() * 1.0));
             output.setConversationId(new BigInteger(130, random).toString(32));
+            output.setCountry("PL");
+            output.setRegion("KRK");
             output.setCity("KRK");
             output.setDateTime(new Date());
-            output.setTags(Arrays.asList("FISH", "FISHING", "TOOLS"));
+            output.setTags(Arrays.asList("FISH", "FISHING", "TOOLS", "NETS", "HOOKS", "BOATS"));
             output.setSystemdata("WINDOWS7, MOZILLAFIREFOX");
-            output.setCountry("PL");
             output.setFormat(new AdFormat((long) (Math.random() * 200.0), (long) (Math.random() * 200.0), Visibility.getRandom(), Position.getRandom()));
-            output.setRegion("KRK");
             list.add(output);
         }
     }
@@ -181,6 +181,7 @@ public class SupplySidePlatformServer {
 
                 Unmarshaller jaxbUnmarshaller = adChoosenAdExchangeRSContext.createUnmarshaller();
                 String str = in.readLine();
+                System.out.println("AdEx RS: " + str);
                 AdChoosenAdExchangeRS adChoosenAdExchangeRS = (AdChoosenAdExchangeRS) jaxbUnmarshaller.unmarshal(new StringReader(str));
 
                 System.out.println("Sold for: " + adChoosenAdExchangeRS.getPaidPrice());

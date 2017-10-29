@@ -22,7 +22,6 @@ public class DemandSidePlatformRQ implements Serializable {
     List<String> tags;
     String systemdata;
     AdFormat format;
-    Float floorPrice;
 
     String dataExchangeId;
 
@@ -109,15 +108,6 @@ public class DemandSidePlatformRQ implements Serializable {
 
     public void setFormat(AdFormat format) {
         this.format = format;
-    }
-
-    @XmlElement
-    public Float getFloorPrice() {
-        return floorPrice;
-    }
-
-    public void setFloorPrice(Float floorPrice) {
-        this.floorPrice = floorPrice;
     }
 
     @XmlElement

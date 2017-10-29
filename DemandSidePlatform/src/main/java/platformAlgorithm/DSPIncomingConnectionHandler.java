@@ -38,6 +38,7 @@ public class DSPIncomingConnectionHandler implements Runnable {
 
             Unmarshaller jaxbUnmarshaller = demandSidePlatformRQContext.createUnmarshaller();
             String str = in.readLine();
+            System.out.println("DSP RQ: " + str);
             DemandSidePlatformRQ demandSidePlatformRQ = (DemandSidePlatformRQ) jaxbUnmarshaller.unmarshal(new StringReader(str));
             System.out.println("Ad for: " + demandSidePlatformRQ.getCity());
 
@@ -53,6 +54,7 @@ public class DSPIncomingConnectionHandler implements Runnable {
 
             jaxbUnmarshaller = bidVictoryAdExchangeRSContext.createUnmarshaller();
             str = in.readLine();
+            System.out.println("AdEx RS: " + str);
             BidVictoryAdExchangeRS bidVictoryAdExchangeRS = (BidVictoryAdExchangeRS) jaxbUnmarshaller.unmarshal(new StringReader(str));
 
             if (bidVictoryAdExchangeRS.getPaidPrice() != 0.0) {

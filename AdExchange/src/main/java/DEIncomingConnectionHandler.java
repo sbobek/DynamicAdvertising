@@ -64,6 +64,7 @@ public class DEIncomingConnectionHandler implements Runnable {
 
             Unmarshaller jaxbUnmarshaller = demandSidePlatformRSContext.createUnmarshaller();
             String str = in.readLine();
+            System.out.println("DSP RS: " + str);
 
             return (DemandSidePlatformRS) jaxbUnmarshaller.unmarshal(new StringReader(str));
         }
@@ -80,8 +81,8 @@ public class DEIncomingConnectionHandler implements Runnable {
 
             Unmarshaller jaxbUnmarshaller = advertisementExchangeRQContext.createUnmarshaller();
             String str = in.readLine();
+            System.out.println("AdExRQ: " + str);
             AdvertisementExchangeRQ advertisementExchangeRQ = (AdvertisementExchangeRQ) jaxbUnmarshaller.unmarshal(new StringReader(str));
-            System.out.println("Ad for: " + advertisementExchangeRQ.getFloorPrice());
 
             DemandSidePlatformRQ demandSidePlatformRQ = createDSPRequest(advertisementExchangeRQ);
 
@@ -218,7 +219,6 @@ public class DEIncomingConnectionHandler implements Runnable {
         output.setConversationId(input.getConversationId());
         output.setDataExchangeId(input.getDataExchangeId());
         output.setDateTime(input.getDateTime());
-        output.setFloorPrice(input.getFloorPrice());
         output.setFormat(input.getFormat());
         output.setPublisherURL(input.getPublisherURL());
         output.setSystemdata(input.getSystemdata());
