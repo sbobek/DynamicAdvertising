@@ -20,6 +20,19 @@ public class Environment {
     private static String model = null;
     private static String dsId = null;
     private static Integer portNo = null;
+    private static String biddingAlgorithm = "expertServices.HeartService";
+
+    public static void setInstance(Environment instance) {
+        Environment.instance = instance;
+    }
+
+    public static String getBiddingAlgorithm() {
+        return biddingAlgorithm;
+    }
+
+    public static void setBiddingAlgorithm(String biddingAlgorithm) {
+        Environment.biddingAlgorithm = biddingAlgorithm;
+    }
 
     public static String getModel() {
         return model;

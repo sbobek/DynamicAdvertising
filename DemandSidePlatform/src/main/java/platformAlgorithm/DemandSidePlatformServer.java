@@ -14,13 +14,14 @@ public class DemandSidePlatformServer {
     private static int starterData(String[] args) {
         if (args.length < 2) {
             Scanner scanner = new Scanner(System.in);
-            System.out.println("Welcome to DSP! Type: DSP_MODEL_PATH DSP_ID PORT_NUMBER\n " +
-                    "using 'NONE' as DSP_MODEL_PATH defaults to standard example model");
+            System.out.println("Welcome to DSP! Type: DSP_MODEL_PATH DSP_ID PORT_NUMBER BIDDING_ALGORITHM_CLASS\n " +
+                    "using 'NONE' as DSP_MODEL_PATH defaults to standard example model, using 'NONE' as algorithm defaults to HeartDroid");
             String command = scanner.nextLine();
 
             Environment.setModel(command.split(" ")[0]);
             Environment.setDsId(command.split(" ")[1]);
             Environment.setPortNo(Integer.parseInt(command.split(" ")[2]));
+            Environment.setBiddingAlgorithm(command.split(" ")[3]);
         } else {
             int i = 0;
 
@@ -43,6 +44,12 @@ public class DemandSidePlatformServer {
                         if (!(i < args.length))
                             return -1;
                         Environment.setModel(args[i]);
+                        break;
+                    case "-algorithm":
+                        i++;
+                        if (!(i < args.length))
+                            return -1;
+                        Environment.setBiddingAlgorithm(args[i]);
                         break;
                 }
                 i++;

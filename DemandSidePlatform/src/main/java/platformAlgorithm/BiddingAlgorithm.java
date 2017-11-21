@@ -7,6 +7,8 @@ import expertServices.HeartService;
 import expertServices.BiddingExpertService;
 import staticData.Environment;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Callable;
 
 /**
@@ -15,12 +17,28 @@ import java.util.concurrent.Callable;
 public class BiddingAlgorithm implements Callable<DemandSidePlatformRS>{
     private DemandSidePlatformRQ demandSidePlatformRQ;
     private DataExchangeGetRS dataExchangeGetRS;
-    private BiddingExpertService biddingExpertService = new HeartService();
+    private BiddingExpertService biddingExpertService;
 
 
     public BiddingAlgorithm(DemandSidePlatformRQ demandSidePlatformRQ, DataExchangeGetRS dataExchangeGetRS){
         this.demandSidePlatformRQ = demandSidePlatformRQ;
         this.dataExchangeGetRS = dataExchangeGetRS;
+        Class<?> clazz = null;
+        try {
+            clazz = Class.forName(Environment.getBiddingAlgorithm());
+            Constructor<?> ctor = clazz.getConstructor();
+            biddingExpertService = (BiddingExpertService) ctor.newInstance();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
