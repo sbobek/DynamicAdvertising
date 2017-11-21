@@ -85,13 +85,14 @@ public class DEIncomingConnectionHandler implements Runnable {
 
             DemandSidePlatformRQ demandSidePlatformRQ = createDSPRequest(advertisementExchangeRQ);
 
-            ExecutorService executor = Executors.newFixedThreadPool(dspServers.size());
+            ExecutorService pool = Executors.newFixedThreadPool(dspServers.size());
             HashMap<Socket, Future<DemandSidePlatformRS>> mapaAukcyjna = new HashMap<Socket, Future<DemandSidePlatformRS>>();
             for (Socket socket : dspServers) {
-                mapaAukcyjna.put(socket, executor.submit(new Sender(demandSidePlatformRQ, socket)));
+                mapaAukcyjna.put(socket, pool.submit(new Sender(demandSidePlatformRQ, socket)));
             }
 
             finalizeAuction(mapaAukcyjna, advertisementExchangeRQ.getFloorPrice());
+            pool.shutdown();
 
         } catch (IOException e) {
             e.printStackTrace();
