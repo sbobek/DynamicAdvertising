@@ -33,7 +33,7 @@ public class BiddingAlgorithm implements Callable<DemandSidePlatformRS>{
         DemandSidePlatformRS demandSidePlatformRS = new DemandSidePlatformRS();
         demandSidePlatformRS.setConversationId(demandSidePlatformRQ.getConversationId());
         demandSidePlatformRS.setAdvertisementUrl("goodUrl.com/" + Environment.getDsId());
-        demandSidePlatformRS.setBidPrice((float) (biddingExpertService.getProposedPrice(demandSidePlatformRQ) + Math.random()));
+        demandSidePlatformRS.setBidPrice((float) (biddingExpertService.getProposedPrice(demandSidePlatformRQ)));
         demandSidePlatformRS.setDemandSidePlatformId(Environment.getDsId());
 
         return demandSidePlatformRS;
