@@ -91,6 +91,12 @@ xtype [name: max_bid_type,
     base: numeric
     ].
 
+xtype [name: tagsfitness_type,
+    domain: [0.000 to 1.000],
+    scale: 3,
+    base: numeric
+    ].
+
 %%%%%%%%%%%%%%%%%%%%%%%%% ATTRIBUTES DEFINITIONS %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 xattr [name: day_of_week_attr,
@@ -162,6 +168,13 @@ xattr [name: maxbid_attr,
     class: simple,
     comm: in,
     abbrev: maxbidattr
+    ].
+
+xattr [name: tagsfitness_attr,
+    type: tagsfitness_type,
+    class: simple,
+    comm: in,
+    abbrev: tagsfitness
     ].
 
 %%%%%%%%%%%%%%%%%%%%%%%% TABLE SCHEMAS DEFINITIONS %%%%%%%%%%%%%%%%%%%%%%%%

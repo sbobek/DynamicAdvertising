@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/DemandSidePlatform/DemandSidePlatform.iml" filepath="$PROJECT_DIR$/DemandSidePlatform/DemandSidePlatform.iml" />
       <module fileurl="file://$PROJECT_DIR$/DynamicAdvertising.iml" filepath="$PROJECT_DIR$/DynamicAdvertising.iml" />
       <module fileurl="file://$PROJECT_DIR$/SupplySidePlatform/SupplySidePlatform.iml" filepath="$PROJECT_DIR$/SupplySidePlatform/SupplySidePlatform.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TestPlatform/TestPlatform.iml" filepath="$PROJECT_DIR$/TestPlatform/TestPlatform.iml" />
     </modules>
   </component>
 </project>

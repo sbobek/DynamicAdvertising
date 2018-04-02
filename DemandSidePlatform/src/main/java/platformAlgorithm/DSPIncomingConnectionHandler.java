@@ -1,19 +1,18 @@
 package platformAlgorithm;
 
+import RequestsAndResponses.AdFeedbackInfo;
 import RequestsAndResponses.BidVictoryAdExchangeRS;
 import RequestsAndResponses.DemandSidePlatformRQ;
 import RequestsAndResponses.DemandSidePlatformRS;
 import expertServices.HeartService;
+import rl.model.AuctionLogEntry;
+import rl.model.AuctionResult;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Created by Vulpes on 2016-12-03.
@@ -26,53 +25,66 @@ public class DSPIncomingConnectionHandler implements Runnable {
     }
 
     public void run() {
-//        LocalDateTime start = LocalDateTime.now();
         try {
-            System.out.println("New connection established!");
+            AuctionLogEntry logEntry = new AuctionLogEntry();
+
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             JAXBContext demandSidePlatformRQContext = JAXBContext.newInstance(DemandSidePlatformRQ.class);
             JAXBContext demandSidePlatformRSContext = JAXBContext.newInstance(DemandSidePlatformRS.class);
             JAXBContext bidVictoryAdExchangeRSContext = JAXBContext.newInstance(BidVictoryAdExchangeRS.class);
+            JAXBContext adFeedbackInfoContext = JAXBContext.newInstance(AdFeedbackInfo.class);
 
             Unmarshaller jaxbUnmarshaller = demandSidePlatformRQContext.createUnmarshaller();
             String str = in.readLine();
-            System.out.println("DSP RQ: " + str);
+
+            if(str == null) {
+                socket.close();
+                return;
+            }else if(DemandSidePlatformServer.RESET_CMD.equals(str)){
+                DemandSidePlatformServer.reset = true;
+                socket.close();
+                return;
+            }else if(DemandSidePlatformServer.SHUTDOWN_CMD.equals(str)){
+                DemandSidePlatformServer.shutdown = true;
+                socket.close();
+                return;
+            }
+
             DemandSidePlatformRQ demandSidePlatformRQ = (DemandSidePlatformRQ) jaxbUnmarshaller.unmarshal(new StringReader(str));
-            System.out.println("Ad for: " + demandSidePlatformRQ.getCity());
+            logEntry.setDemandSidePlatformRQ(demandSidePlatformRQ);
 
-            BiddingAlgorithm biddingAlgorithm = new BiddingAlgorithm(demandSidePlatformRQ, null);
-            DemandSidePlatformRS response = biddingAlgorithm.call();
+            DemandSidePlatformRS response = BiddingAlgorithm.getInstance().decideBidValue(demandSidePlatformRQ);
+            logEntry.setDemandSidePlatformRS(response);
+
             Marshaller jaxbMarshaller = demandSidePlatformRSContext.createMarshaller();
-
             jaxbMarshaller.marshal(response, out);
             out.write('\n');
             out.flush();
-            System.out.println("Sent!");
 
             jaxbUnmarshaller = bidVictoryAdExchangeRSContext.createUnmarshaller();
             str = in.readLine();
-            System.out.println("AdEx RS: " + str);
             BidVictoryAdExchangeRS bidVictoryAdExchangeRS = (BidVictoryAdExchangeRS) jaxbUnmarshaller.unmarshal(new StringReader(str));
 
-            if (bidVictoryAdExchangeRS.getPaidPrice() != 0.0) {
-                System.out.println("I win! and pay: "+ bidVictoryAdExchangeRS.getPaidPrice());
+            if (bidVictoryAdExchangeRS.getPaidPrice() > 0.0) {
+                logEntry.setAuctionResult(AuctionResult.WON);
                 HeartService.incrementSoldAds();
-                HeartService.addPaidMoney(Double.valueOf(bidVictoryAdExchangeRS.getPaidPrice()));
+                HeartService.addPaidMoney(bidVictoryAdExchangeRS.getPaidPrice());
+
+                jaxbUnmarshaller = adFeedbackInfoContext.createUnmarshaller();
+                str = in.readLine();
+                AdFeedbackInfo adFeedbackInfo = (AdFeedbackInfo) jaxbUnmarshaller.unmarshal(new StringReader(str));
+                logEntry.setAdFeedbackInfo(adFeedbackInfo);
+
+            }else {
+                logEntry.setAuctionResult(AuctionResult.LOST);
             }
             socket.close();
+            BiddingAlgorithm.getInstance().processAuctionResult(logEntry);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        LocalDateTime stop = LocalDateTime.now();
-//        long diffInMilli = java.time.Duration.between(start, stop).toMillis();
-//        long diffInSeconds = java.time.Duration.between(start, stop).getSeconds();
-//        long diffInMinutes = java.time.Duration.between(start, stop).toMinutes();
-//
-//        System.out.println("Work took full " + diffInMinutes + " minutes!");
-//        System.out.println("Work took full " + diffInSeconds + " seconds!");
-//        System.out.println("Work took full " + diffInMilli + " miliseconds!");
     }
 }

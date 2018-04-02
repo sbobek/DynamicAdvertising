@@ -3,6 +3,7 @@ package RequestsAndResponses;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by Vulpes on 2016-12-03.
@@ -12,7 +13,8 @@ public class DemandSidePlatformRS implements Serializable {
     String conversationId;
 
     String advertisementUrl;
-    Float bidPrice;
+    List<String> advertisementTags;
+    Double bidPrice;
 
     String demandSidePlatformId;
 
@@ -35,11 +37,11 @@ public class DemandSidePlatformRS implements Serializable {
     }
 
     @XmlElement
-    public Float getBidPrice() {
+    public Double getBidPrice() {
         return bidPrice;
     }
 
-    public void setBidPrice(Float bidPrice) {
+    public void setBidPrice(Double bidPrice) {
         this.bidPrice = bidPrice;
     }
 
@@ -50,5 +52,14 @@ public class DemandSidePlatformRS implements Serializable {
 
     public void setDemandSidePlatformId(String demandSidePlatformId) {
         this.demandSidePlatformId = demandSidePlatformId;
+    }
+
+    @XmlElement
+    public List<String> getAdvertisementTags() {
+        return advertisementTags;
+    }
+
+    public void setAdvertisementTags(List<String> advertisementTags) {
+        this.advertisementTags = advertisementTags;
     }
 }

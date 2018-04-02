@@ -46,6 +46,7 @@
         <option value="$PROJECT_DIR$/DataExchange/pom.xml" />
         <option value="$PROJECT_DIR$/DemandSidePlatform/pom.xml" />
         <option value="$PROJECT_DIR$/SupplySidePlatform/pom.xml" />
+        <option value="$PROJECT_DIR$/AdExchange/pom.xml" />
       </list>
     </option>
   </component>

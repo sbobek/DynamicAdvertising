@@ -21,7 +21,7 @@ public class AdvertisementExchangeRQ implements Serializable{
     List<String> tags;
     String systemdata;
     AdFormat format;
-    Float floorPrice;
+    Double floorPrice;
 
     String dataExchangeId;
     String supplySidePlatformId;
@@ -108,11 +108,11 @@ public class AdvertisementExchangeRQ implements Serializable{
     }
 
     @XmlElement
-    public Float getFloorPrice() {
+    public Double getFloorPrice() {
         return floorPrice;
     }
 
-    public void setFloorPrice(Float floorPrice) {
+    public void setFloorPrice(Double floorPrice) {
         this.floorPrice = floorPrice;
     }
 
@@ -133,4 +133,5 @@ public class AdvertisementExchangeRQ implements Serializable{
     public void setSupplySidePlatformId(String supplySidePlatformId) {
         this.supplySidePlatformId = supplySidePlatformId;
     }
+
 }

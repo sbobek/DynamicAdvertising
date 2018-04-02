@@ -6,19 +6,22 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="AdExchange" />
         <module name="CommonDataset" />
         <module name="DataExchange" />
         <module name="DemandSidePlatform" />
-        <module name="DynamicAdvertising" />
         <module name="SupplySidePlatform" />
+        <module name="TestPlatform" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="AdExchange" target="1.8" />
       <module name="CommonDataset" target="1.8" />
       <module name="DataExchange" target="1.8" />
       <module name="DemandSidePlatform" target="1.8" />
-      <module name="DynamicAdvertising" target="1.8" />
+      <module name="DynamicAdvertising" target="1.5" />
       <module name="SupplySidePlatform" target="1.8" />
+      <module name="TestPlatform" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

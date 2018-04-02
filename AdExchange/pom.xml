@@ -4,9 +4,34 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>DynamicAdvertising</groupId>
-    <artifactId>DataExchange</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <parent>
+        <groupId>DynamicAdvertising</groupId>
+        <artifactId>DynamicAdvertising</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>AdExchange</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <mainClass>DataExchangeServer</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>DynamicAdvertising</groupId>

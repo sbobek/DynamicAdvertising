@@ -4,9 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>DynamicAdvertising</groupId>
+    <parent>
+        <groupId>DynamicAdvertising</groupId>
+        <artifactId>DynamicAdvertising</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <artifactId>DemandSidePlatform</artifactId>
-    <version>1.0-SNAPSHOT</version>
+
     <build>
         <plugins>
             <plugin>
@@ -17,6 +21,16 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <mainClass>platformAlgorithm.DemandSidePlatformServer</mainClass>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
     <dependencies>
@@ -26,10 +40,117 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
+            <groupId>nz.ac.waikato.cms.moa</groupId>
+            <artifactId>moa</artifactId>
+            <version>2017.06</version>
         </dependency>
+        <dependency>
+            <groupId>heartdroid</groupId>
+            <artifactId>heartdroid</artifactId>
+            <version>1.2.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/heartdroid-1.2.0.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>smac</groupId>
+            <artifactId>smac</artifactId>
+            <version>2.10.03</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/smac.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>aeatk</groupId>
+            <artifactId>aeatk</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/aeatk.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>gov.nist.math</groupId>
+            <artifactId>jama</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>DomainInter</groupId>
+            <artifactId>DomainInter</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/DomainInter.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.objecthunter</groupId>
+            <artifactId>exp4j</artifactId>
+            <version>0.4.8</version>
+        </dependency>
+        <dependency>
+            <groupId>fastrf</groupId>
+            <artifactId>fastrf</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/fastrf.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>24.1-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.4</version>
+        </dependency>
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+            <version>1.27</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jcommander.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.github.yannrichet</groupId>
+            <artifactId>JMathArray</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-access</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>numerics4j</groupId>
+            <artifactId>numerics4j</artifactId>
+            <version>1.3</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/numerics4j-1.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mangosdk.spi</groupId>
+            <artifactId>spi</artifactId>
+            <version>0.2.4</version>
+        </dependency>
+
+
     </dependencies>
 
 

@@ -1,8 +1,15 @@
 package expertServices;
 
-import RequestsAndResponses.DemandSidePlatformRQ;
-import heart.*;
+import java.util.Calendar;
+import java.util.LinkedList;
 import org.apache.commons.lang3.StringUtils;
+
+import RequestsAndResponses.DemandSidePlatformRQ;
+import heart.Configuration;
+import heart.Debug;
+import heart.HeaRT;
+import heart.State;
+import heart.StateElement;
 import heart.alsvfd.Formulae;
 import heart.alsvfd.SimpleNumeric;
 import heart.alsvfd.SimpleSymbolic;
@@ -13,13 +20,15 @@ import heart.exceptions.BuilderException;
 import heart.exceptions.NotInTheDomainException;
 import heart.parser.hmr.HMRParser;
 import heart.parser.hmr.runtime.SourceFile;
-import heart.xtt.*;
+import heart.xtt.Attribute;
+import heart.xtt.Decision;
+import heart.xtt.Rule;
+import heart.xtt.Table;
+import heart.xtt.Type;
+import heart.xtt.XTTModel;
+import rl.model.AuctionLogEntry;
 import staticData.Environment;
-
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import utils.TagFitnessCalculator;
 
 public class HeartService implements BiddingExpertService {
     private static XTTModel model = null;
@@ -53,8 +62,9 @@ public class HeartService implements BiddingExpertService {
         HeartService.paidMoney += paidMoney;
     }
 
-    public HeartService() {
-        startUpConfiguration(Environment.getModel());
+    @Override
+    public void initialize() {
+        setModelfile(Environment.getModel());
         if (model == null) {
             getModel();
             Debug.debugLevel = Debug.Level.SILENT;
@@ -64,6 +74,7 @@ public class HeartService implements BiddingExpertService {
     public boolean getModel() {
         try {
             //Loading a file with a model
+            System.out.println(System.getProperty("user.dir"));
             SourceFile hmr_threat_monitor = new SourceFile(modelfile);
             HMRParser parser = new HMRParser();
 
@@ -254,6 +265,12 @@ public class HeartService implements BiddingExpertService {
         tagsE.setValue(new SimpleSymbolic(tags));
         XTTstate.addStateElement(tagsE);
 
+        StateElement tagsFitnessE = new StateElement();
+        Double tagsFitness = TagFitnessCalculator.calculateTagFitness(Environment.getTargetTags(), demandSidePlatformRQ.getTags());
+        tagsFitnessE.setAttributeName("tags_fitness_attr");
+        tagsFitnessE.setValue(new SimpleNumeric(tagsFitness));
+        XTTstate.addStateElement(tagsFitnessE);
+
         StateElement systemdataE = new StateElement();
         String systemdata = demandSidePlatformRQ.getSystemdata();
         systemdataE.setAttributeName("systemdata_attr");
@@ -284,6 +301,8 @@ public class HeartService implements BiddingExpertService {
 
         return XTTstate;
     }
+
+
 
     public State createDefaultState() {
         Calendar calendar = Calendar.getInstance();
@@ -317,23 +336,17 @@ public class HeartService implements BiddingExpertService {
             // reason for this - we need information
             // which tables to fire, but we know nothing about table names
 
-            List<String> tableNames = model.getTables().stream()
-                    .map(Table::getName)
-                    .collect(Collectors.toList());
+            String[] tableNames = model.getTables().stream()
+                                       .map(Table::getName)
+                                       .toArray(String[]::new);
 
             HeaRT.dataDrivenInference(model,
-                    (String[]) tableNames.toArray(new String[tableNames.size()]),
-                    new Configuration.Builder()
-                            .setInitialState(state)
-                            .build());
+                  tableNames,
+                  new Configuration.Builder()
+                        .setInitialState(state)
+                        .build());
 
-        } catch (UnsupportedOperationException e) {
-            e.printStackTrace();
-        } catch (AttributeNotRegisteredException e) {
-            e.printStackTrace();
-        } catch (NotInTheDomainException e) {
-            e.printStackTrace();
-        } catch (BuilderException e) {
+        } catch (UnsupportedOperationException | BuilderException | NotInTheDomainException | AttributeNotRegisteredException e) {
             e.printStackTrace();
         }
     }
@@ -362,8 +375,12 @@ public class HeartService implements BiddingExpertService {
     }
 
     @Override
-    public void startUpConfiguration(String... arguments) {
-        setModelfile(arguments[0]);
+    public void processAuctionResult(AuctionLogEntry auctionLogEntry) {
+        // Nothing to do
     }
 
+    @Override
+    public void reset() {
+        // Nothing to do
+    }
 }

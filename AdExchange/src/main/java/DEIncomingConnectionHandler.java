@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.*;
@@ -26,8 +27,6 @@ public class DEIncomingConnectionHandler implements Runnable {
                 Socket server = new Socket("localhost", port);
                 dspServers.add(server);
             }
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -80,6 +79,13 @@ public class DEIncomingConnectionHandler implements Runnable {
 
             Unmarshaller jaxbUnmarshaller = advertisementExchangeRQContext.createUnmarshaller();
             String str = in.readLine();
+
+            if(DataExchangeServer.SHUTDOWN_CMD.equals(str)){
+                DataExchangeServer.shutdown = true;
+                sspServer.close();
+                return;
+            }
+
             System.out.println("AdExRQ: " + str);
             AdvertisementExchangeRQ advertisementExchangeRQ = (AdvertisementExchangeRQ) jaxbUnmarshaller.unmarshal(new StringReader(str));
 
@@ -94,9 +100,7 @@ public class DEIncomingConnectionHandler implements Runnable {
             finalizeAuction(mapaAukcyjna, advertisementExchangeRQ.getFloorPrice());
             pool.shutdown();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JAXBException e) {
+        } catch (IOException | JAXBException e) {
             e.printStackTrace();
         }
 //        LocalDateTime stop = LocalDateTime.now();
@@ -109,12 +113,13 @@ public class DEIncomingConnectionHandler implements Runnable {
 //        System.out.println("Work took full " + diffInMilli + " miliseconds!");
     }
 
-    private void finalizeAuction(HashMap<Socket, Future<DemandSidePlatformRS>> mapaAukcyjna, Float floorPrice) {
+    private void finalizeAuction(HashMap<Socket, Future<DemandSidePlatformRS>> mapaAukcyjna, Double floorPrice) {
         try {
             JAXBContext bidVictoryAdExchangeRSContext = JAXBContext.newInstance(BidVictoryAdExchangeRS.class);
             JAXBContext adChoosenAdExchangeRSContext = JAXBContext.newInstance(AdChoosenAdExchangeRS.class);
-            BidVictoryAdExchangeRS finalVictor = new BidVictoryAdExchangeRS("", "NULL", 0.0f);
+            BidVictoryAdExchangeRS finalVictor = new BidVictoryAdExchangeRS("", "NULL", Collections.emptyList(),0.0d);
 
+            PrintWriter winner = null;
             if (mapaAukcyjna.size() < 2) {
                 for (Socket socket : mapaAukcyjna.keySet()) {
                     DemandSidePlatformRS demandSidePlatformRS = mapaAukcyjna.get(socket).get();
@@ -124,13 +129,15 @@ public class DEIncomingConnectionHandler implements Runnable {
                         finalVictor = new BidVictoryAdExchangeRS(
                                 demandSidePlatformRS.getConversationId(),
                                 demandSidePlatformRS.getAdvertisementUrl(),
+                                demandSidePlatformRS.getAdvertisementTags(),
                                 demandSidePlatformRS.getBidPrice());
-
+                        winner = out;
                     } else {
                         finalVictor = new BidVictoryAdExchangeRS(
                                 demandSidePlatformRS.getConversationId(),
                                 "NULL",
-                                0.0f);
+                                Collections.emptyList(),
+                                0.0d);
                         System.out.println("Nobody wins");
                     }
                     jaxbMarshaller.marshal(finalVictor, out);
@@ -140,12 +147,12 @@ public class DEIncomingConnectionHandler implements Runnable {
                 }
             } else {
                 Socket bestSocket = null;
-                Float bestPrice = floorPrice;
-                Float secondBest = 0.0f;
+                Double bestPrice = floorPrice;
+                Double secondBest = 0.0d;
 
                 for (Socket socket : mapaAukcyjna.keySet()) {
                     DemandSidePlatformRS demandSidePlatformRS = mapaAukcyjna.get(socket).get();
-                    Float bid = demandSidePlatformRS.getBidPrice();
+                    Double bid = demandSidePlatformRS.getBidPrice();
 
                     if (bid > bestPrice) {
                         secondBest = bestPrice;
@@ -165,14 +172,17 @@ public class DEIncomingConnectionHandler implements Runnable {
                         bidVictoryAdExchangeRS = new BidVictoryAdExchangeRS(
                                 demandSidePlatformRS.getConversationId(),
                                 demandSidePlatformRS.getAdvertisementUrl(),
+                                demandSidePlatformRS.getAdvertisementTags(),
                                 secondBest);
                         finalVictor = bidVictoryAdExchangeRS;
+                        winner = out;
                     } else {
                         DemandSidePlatformRS demandSidePlatformRS = mapaAukcyjna.get(socket).get();
                         bidVictoryAdExchangeRS = new BidVictoryAdExchangeRS(
                                 demandSidePlatformRS.getConversationId(),
                                 "NULL",
-                                0.0f);
+                                Collections.emptyList(),
+                                0.0d);
                     }
 
                     Marshaller jaxbMarshaller = bidVictoryAdExchangeRSContext.createMarshaller();
@@ -188,26 +198,33 @@ public class DEIncomingConnectionHandler implements Runnable {
             jaxbMarshaller.marshal(new AdChoosenAdExchangeRS(
                             finalVictor.getConversationId(),
                             finalVictor.getAdvertisementUrl(),
+                            finalVictor.getAdvertisementTags(),
                             finalVictor.getPaidPrice()),
                     out);
             out.write('\n');
             out.flush();
             System.out.println("Sent!");
 
+            if(winner != null){
+                handleAdFeedbackInfo(winner);
+            }
+
             for (Socket socket : dspServers) {
                 socket.close();
             }
             sspServer.close();
 
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (JAXBException | IOException | ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void handleAdFeedbackInfo(PrintWriter dspWinner) throws IOException {
+        BufferedReader ssp = new BufferedReader(new InputStreamReader(sspServer.getInputStream()));
+        String adFeedback = ssp.readLine();
+        dspWinner.write(adFeedback);
+        dspWinner.write("\n");
+        dspWinner.flush();
     }
 
     private DemandSidePlatformRQ createDSPRequest(AdvertisementExchangeRQ input) {

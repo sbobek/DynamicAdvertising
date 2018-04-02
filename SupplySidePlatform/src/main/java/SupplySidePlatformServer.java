@@ -1,5 +1,10 @@
 import RequestsAndResponses.*;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.SetUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -8,14 +13,22 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SupplySidePlatformServer {
+    private static final int MIN_RANDOM_TAGS = 1;
+
     private static SecureRandom random = new SecureRandom();
     private static List<AdvertisementExchangeRQ> adList = new ArrayList<>();
     private static int port;
-    static HashMap<String, Float> paid = new HashMap<>();
+    private static Integer parentPort = null;
+    private static AdFeedbackSimulator adFeedbackSimulator = new DefaultAdFeedbackSimulator();
+    private static List<String> availableTags = Arrays.asList("FISH", "FISHING", "TOOLS", "NETS", "HOOKS", "BOATS");
+
+    static HashMap<String, Double> paid = new HashMap<>();
     static HashMap<String, Integer> sold = new HashMap<>();
 
     /**
@@ -23,14 +36,14 @@ public class SupplySidePlatformServer {
      **/
     private static AdvertisementExchangeRQ advertisementExchangeRQ() {
         AdvertisementExchangeRQ output = new AdvertisementExchangeRQ();
-        output.setFloorPrice((float) (Math.random() * 100.0));
+        output.setFloorPrice((Math.random() * 100.0));
         output.setConversationId(new BigInteger(130, random).toString(32));
         output.setCity("KRK");
         output.setDateTime(new Date());
-        output.setTags(Arrays.asList("FISH", "FISHING", "TOOLS"));
+        output.setTags(randomTags());
         output.setSystemdata("WINDOWS7, MOZILLAFIREFOX");
         output.setCountry("PL");
-        output.setFormat(new AdFormat(100l, 500l, Visibility.SIDEWAY, Position.FIXED));
+        output.setFormat(new AdFormat(100L, 500L, Visibility.SIDEWAY, Position.FIXED));
         output.setRegion("KRK");
         return output;
     }
@@ -79,7 +92,7 @@ public class SupplySidePlatformServer {
                                     Position.valueOf(data[3])));
 
                     line = br.readLine();
-                    advertisementExchangeRQ.setFloorPrice(Float.parseFloat(line));
+                    advertisementExchangeRQ.setFloorPrice(Double.parseDouble(line));
 
                     advertisementExchangeRQ.setConversationId(new BigInteger(130, random).toString(32));
                     list.add(advertisementExchangeRQ);
@@ -93,25 +106,40 @@ public class SupplySidePlatformServer {
     private static void generateRandomAds(Integer amount, List<AdvertisementExchangeRQ> list) {
         for (int i = 0; i < amount; i++) {
             AdvertisementExchangeRQ output = new AdvertisementExchangeRQ();
-            output.setFloorPrice((float) (Math.random() * 1.0));
+            output.setFloorPrice((Math.random() * 1.0));
             output.setConversationId(new BigInteger(130, random).toString(32));
             output.setCountry("PL");
             output.setRegion("KRK");
             output.setCity("KRK");
             output.setDateTime(new Date());
-            output.setTags(Arrays.asList("FISH", "FISHING", "TOOLS", "NETS", "HOOKS", "BOATS"));
+            output.setTags(randomTags());
             output.setSystemdata("WINDOWS7, MOZILLAFIREFOX");
             output.setFormat(new AdFormat((long) (Math.random() * 200.0), (long) (Math.random() * 200.0), Visibility.getRandom(), Position.getRandom()));
             list.add(output);
         }
     }
 
+    private static List<String> randomTags(){
+        int numberOfTags = MIN_RANDOM_TAGS + random.nextInt(availableTags.size() - MIN_RANDOM_TAGS + 1);
+        for (int i = 0; i < numberOfTags; i++)
+        {
+            int indexToSwap = i + random.nextInt(availableTags.size() - i);
+            String temp = availableTags.get(i);
+            availableTags.set(i, availableTags.get(indexToSwap));
+            availableTags.set(indexToSwap, temp);
+        }
+        return availableTags.subList(0, numberOfTags).stream()
+                            .sorted()
+                            .collect(Collectors.toList());
+    }
+
     static int starterData(String[] args) {
         if (args.length < 1) {
             Scanner scanner = new Scanner(System.in);
 
-            System.out.println("Please enter: DATA_EXCHANGE_SERVER_PORT PATH_TO_FILE_WITH_ADS\n" +
-                    "you can enter NONE as path to file, it will mean to use single example of request");
+            System.out.println("Please enter: DATA_EXCHANGE_SERVER_PORT PATH_TO_FILE_WITH_ADS AD_FEEDBACK_SIMULATOR\n" +
+                    "you can enter NONE as path to file, it will mean to use single example of request\n" +
+                    "you can enter DEFAULT as ad feedback simulator, default implementation DefaultAdFeedbackSimulator will be used");
             String command = scanner.nextLine();
             String[] data = command.split(" ");
             port = Integer.parseInt(data[0]);
@@ -119,6 +147,16 @@ public class SupplySidePlatformServer {
             if (!data[1].equals("NONE")) {
                 readFromFile(data[1], adList);
             } else adList.add(advertisementExchangeRQ());
+
+            try {
+                if("DEFAULT".equals(data[2])){
+                    adFeedbackSimulator = new DefaultAdFeedbackSimulator();
+                }else {
+                    adFeedbackSimulator = (AdFeedbackSimulator) Class.forName(data[2]).newInstance();
+                }
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
         } else {
             int i = 0;
 
@@ -145,6 +183,32 @@ public class SupplySidePlatformServer {
                             return -1;
                         generateRandomAds(Integer.parseInt(args[i]), adList);
                         break;
+                    case "-tags":
+                        i++;
+                        if (!(i < args.length))
+                            return -1;
+                        availableTags = Arrays.asList(args[i].split(","));
+                        break;
+                    case "-parent":
+                        i++;
+                        if (!(i < args.length))
+                            return -1;
+                        parentPort = Integer.parseInt(args[i]);
+                        break;
+                    case "-feedbackSimulator":
+                        i++;
+                        if (!(i < args.length))
+                            return -1;
+                        try {
+                            if("DEFAULT".equals(args[i])){
+                                adFeedbackSimulator = new DefaultAdFeedbackSimulator();
+                            }else {
+                                adFeedbackSimulator = (AdFeedbackSimulator) Class.forName(args[i]).newInstance();
+                            }
+                        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
                 i++;
             }
@@ -154,16 +218,30 @@ public class SupplySidePlatformServer {
         return 0;
     }
 
+    private static void notifyParent(String message){
+        if(parentPort != null){
+            try {
+                Socket notice = new Socket("localhost", parentPort);
+                PrintWriter out = new PrintWriter(notice.getOutputStream(), true);
+                out.println("[SSP] " + message);
+                out.flush();
+                notice.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private static void algorithm(String[] args) {
         if (starterData(args) == -1) {
             System.err.println("Some of arguments were wrong!");
             return;
         }
+        notifyParent("up");
 
         for (AdvertisementExchangeRQ advertisementExchangeRQ : adList) {
-            Socket socket = null;
             try {
-                socket = new Socket("localhost", port);
+                Socket socket = new Socket("localhost", port);
 
                 System.out.println("Connected!");
 
@@ -172,6 +250,7 @@ public class SupplySidePlatformServer {
 
                 JAXBContext advertisementExchangeRQContext = JAXBContext.newInstance(AdvertisementExchangeRQ.class);
                 JAXBContext adChoosenAdExchangeRSContext = JAXBContext.newInstance(AdChoosenAdExchangeRS.class);
+                JAXBContext adFeedbackInfoContext = JAXBContext.newInstance(AdFeedbackInfo.class);
 
                 Marshaller jaxbMarshaller = advertisementExchangeRQContext.createMarshaller();
                 jaxbMarshaller.marshal(advertisementExchangeRQ, out);
@@ -186,35 +265,38 @@ public class SupplySidePlatformServer {
 
                 System.out.println("Sold for: " + adChoosenAdExchangeRS.getPaidPrice());
                 System.out.println("Sold for: " + adChoosenAdExchangeRS.getAdvertisementUrl());
+                if (!"NULL".equals(adChoosenAdExchangeRS.getAdvertisementUrl())) {
+                    AdFeedbackInfo adFeedbackInfo = adFeedbackSimulator.simulateAdFeedback(advertisementExchangeRQ, adChoosenAdExchangeRS);
+                    Marshaller feedbackMarshaller = adFeedbackInfoContext.createMarshaller();
+                    feedbackMarshaller.marshal(adFeedbackInfo, out);
+                    out.write('\n');
+                    out.flush();
+                    System.out.println("Sent ad feedback!");
+                }
                 if (!paid.containsKey(adChoosenAdExchangeRS.getAdvertisementUrl()))
-                    paid.put(adChoosenAdExchangeRS.getAdvertisementUrl(), 0.00f);
+                    paid.put(adChoosenAdExchangeRS.getAdvertisementUrl(), 0.0d);
                 if (!sold.containsKey(adChoosenAdExchangeRS.getAdvertisementUrl()))
                     sold.put(adChoosenAdExchangeRS.getAdvertisementUrl(), 0);
 
                 paid.put(adChoosenAdExchangeRS.getAdvertisementUrl(), paid.get(adChoosenAdExchangeRS.getAdvertisementUrl()) + adChoosenAdExchangeRS.getPaidPrice());
                 sold.put(adChoosenAdExchangeRS.getAdvertisementUrl(), sold.get(adChoosenAdExchangeRS.getAdvertisementUrl()) + 1);
 
-
                 socket.close();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JAXBException e) {
+            } catch (IOException | JAXBException e) {
                 e.printStackTrace();
             }
         }
+
+        notifyParent("down");
     }
 
     public static void main(String[] args) {
         LocalDateTime start = LocalDateTime.now();
         algorithm(args);
         LocalDateTime stop = LocalDateTime.now();
-        long diffInMilli = java.time.Duration.between(start, stop).toMillis();
-        long diffInSeconds = java.time.Duration.between(start, stop).getSeconds();
-        long diffInMinutes = java.time.Duration.between(start, stop).toMinutes();
-        System.out.println("Work took full " + diffInMinutes + " minutes!");
-        System.out.println("Work took full " + diffInSeconds + " seconds!");
-        System.out.println("Work took full " + diffInMilli + " miliseconds!");
+        String time = DurationFormatUtils.formatDuration(Duration.between(start, stop).toMillis(), "HH:mm:ss.SSS");
+        System.out.println("Work took " + time + " !");
 
         for (String key : sold.keySet()) {
             System.out.println("Sold " + sold.get(key) + " to " + key + " for sum of " + paid.get(key));
